@@ -19,16 +19,13 @@ Tasks list:
 
 ### Initialize
 
-Create api-key:
-
 ```
 const blockchainConnector = require('squeezer-blockchain-connector').init({ 
-    key : 'squeezer-key' , 
-   environment: 'test'
+   key : 'squeezer-key', 
+   environment : 'test',
+   currencyType : 'ETH'
 });
 ```
-Created api-key is used when generate new wallet
-
 ## Using connector
 
 ### Create new Wallet

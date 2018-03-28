@@ -1,0 +1,30 @@
+{
+  "name": "squeezer-blockchain-connector",
+  "version": "0.0.1",
+  "description": "Agnostic blockchain connector",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SqueezerIO/squeezer-blockchain-connector.git"
+  },
+  "author": "Ionut Vaida",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SqueezerIO/squeezer-blockchain-connector/issues"
+  },
+  "homepage": "https://github.com/SqueezerIO/squeezer-blockchain-connector#readme",
+  "dependencies": {
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0"
+  }
+}
