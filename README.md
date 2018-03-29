@@ -78,6 +78,47 @@ blockchainConnector.createWallet()
   }
 }
 ```
+### Get all wallets
+
+```
+blockchainConnector.listAllWallets()
+```
+
+#### Description
+
+Get info about wallets
+
+#### Parameters
+No parameters needed
+#### Return format
+
+A JSON object that contain informations about all wallets
+
+#### Example
+
+<b>Request</b>
+```
+blockchainConnector.listAllWallets()
+	.then((response) => {
+		console.log(console);
+	})
+	.catch((error) => {
+		console.log(error)
+	});
+```
+<b>Result</b>
+```
+[
+  {
+    "_id": "5abd3817b6542e162b4788d5",
+    "WalletID": "7931462c-7adf-4816-8259-ca99874c38fb",
+    "Address": "0xa37875c303786525a767F0d3f9F4A3E94989eC87",
+    "CurrencyType": "ETH",
+    "__v": 0
+  },
+  ...
+]
+```
 ### Get balance
 ```
 blockchainConnector.getBalance(walletAdress);
@@ -101,15 +142,7 @@ blockchainConnector.getBalance(walletAdress)
 		console.log(error);
 	});
 ```
-<b>Body</b>
-```
-{
-  "walletAddress": "0xc1f9e93081e7797ec3ef2134e0e656b2c8d542f1",
-  "currencyType": "ETH",
-  "network" : "rinkeby"
-}
-```
-<b>Response</b>
+<b>Result</b>
 ```
 "1.895178899999999998"
 ```
@@ -123,14 +156,12 @@ blockchainConnector.sendTransaction(transactionData)
 
 Send coins from one wallet to another
 
-#### Parameters
+#### Parameters of transactionData
 
 * <b>toWallet</b> - wallet's address
-* <b>currencyType</b> - what type of wallet want
 * <b>amount</b> - amount of coins
 * <b>keyStore</b> - fromWallet's keystore
 * <b>accessKey</b> - api-key used to generate wallet
-* <b>network</b> - if use test environment should be passed network (rinkeby, ropsten, kovan - ETH and bitcoin-testnet -BTC)
 
 #### Return format
 
@@ -140,40 +171,16 @@ A JSON object that contain informations about that transaction
 
 <b>Request</b>
 ```
-POST /v1/wallets/SendTransaction
+blockchainConnector.sendTransaction(transactionData)
+	.then((data) => {
+		console.log(data);
+	})
+	.catch((error) => {
+		console.log(error);
+	});
 ```
-<b>Body</b>
-```
-{
-  "toWallet": "0x8a5cf6d5e86ebfe3e1ab573d1eafc299c04c8cf9",
-  "currencyType": "ETH",
-  "amount": 0.001,
-  "keyStore": {
-    "version": 3,
-    "id": "0af46c1e-4d02-4f9b-af62-ec358612a3c2",
-    "address": "c1f9e93081e7797ec3ef2134e0e656b2c8d542f1",
-    "crypto": {
-      "ciphertext": "cc3bb088bd53ea45172b0ab5f01c9e28e6b7b3743a589a4437844b9fce922888",
-      "cipherparams": {
-        "iv": "55b1aeeffa8ce3ffe24a488e58174c0f"
-      },
-      "cipher": "aes-128-ctr",
-      "kdf": "scrypt",
-      "kdfparams": {
-        "dklen": 32,
-        "salt": "0c990d41edcf0d8f5541713ef0e2f0629366ffadb8190b0d3a32755488de6877",
-        "n": 262144,
-        "r": 8,
-        "p": 1
-      },
-      "mac": "4ea78c87318dbe87ac4e109845301d248d4caf25f82882dff1fbaa1fe4b3d70c"
-    }
-  },
-  "accessKey": "3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4",
-  "network" : "rinkeby"
-}
-```
-<b>Response</b>
+
+<b>Result</b>
 ```
 {
   "transaction": {
@@ -184,60 +191,7 @@ POST /v1/wallets/SendTransaction
   }
 }
 ```
-### Get transaction
 
-```
-POST /v1/blockchainlink/GetTransaction
-```
-
-#### Description
-
-Get info about one transaction
-
-#### Parameters
-
-* <b>transactionHash</b> - transaction hash returned by SendTransaction
-* <b>currencyType</b> - what type of wallet want
-* <b>network</b> - if use test environment should be passed network (rinkeby, ropsten, kovan - ETH and bitcoin-testnet -BTC)
-
-#### Return format
-
-A JSON object that contain informations about transaction
-
-#### Example
-
-<b>Request</b>
-```
-POST /v1/wallets/GetTransaction
-```
-<b>Body</b>
-```
-{
-  "transactionHash": "0xad63f8fc7db990058ef3ec6433190cbc5b0e0af670be79c49a70d8e1daacfb29",
-  "currencyType" : "ETH",
-  "network" : "rinkeby"
-  new
-}
-```
-<b>Response</b>
-```
-{
-  "blockHash": "0xb589d75b759436e43381dc30f89a792f6f7bace421bf04f5eb1f2cca7c8e0628",
-  "blockNumber": 1972693,
-  "from": "0xc1f9e93081e7797ec3ef2134e0e656b2c8d542f1",
-  "gas": 21000,
-  "gasPrice": "1000000000",
-  "hash": "0xad63f8fc7db990058ef3ec6433190cbc5b0e0af670be79c49a70d8e1daacfb29",
-  "input": "0x",
-  "nonce": 11,
-  "to": "0x8a5cf6d5e86ebfe3e1ab573d1eafc299c04c8cf9",
-  "transactionIndex": 9,
-  "value": "1000000000000000",
-  "v": "0x1b",
-  "r": "0xf62198309971d6c3725f2f0cddc7eb60da5715fed89b597d4a273322313aebe4",
-  "s": "0x5b86ac969b259c73d7fccc3dec9f28fdbdc024a8f72c842939baeb198eb9b6b1"
-}
-```
 
 
 
