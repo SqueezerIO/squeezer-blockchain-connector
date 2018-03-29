@@ -30,68 +30,76 @@ const blockchainConnector = require('squeezer-blockchain-connector').init({
 
 ### Create new Wallet
 ```
-POST /v1/wallets/CreateWallet
+blockchainConnector.createWallet();
 ```
 #### Description
-Create new wallet adress using api-key
+Create new wallet adress
 #### Parameters
-* <b>accessKey</b> - api-key generated at connector initialization
-* <b>currencyType</b> - what type of wallet want
+No parameters needed
 #### Return format
-A JSON object with keystore and adress of wallet
+A JSON object with accesskey, walletID, keystore and adress of wallet
 #### Example
 <b>Request</b>
 ```
-POST /v1/wallets/CreateWallet
+blockchainConnector.createWallet()
+	.then((response) => {
+		console.log(console);
+	})
+	.catch((error) => {
+		console.log(error)
+	})
 ```
-<b>Body</b>
+<b>Result</b>
 ```
 {
-  "accessKey": "3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4",
-  "currencyType": "ETH"
-}
-```
-<b>Response</b>
-```
-{
-  "version": 3,
-  "id": "f0efc549-88c0-45cf-9991-6ec53ba7ba13",
-  "address": "7c110b7761b695d4343f6dfe786a49cd5c03e31e",
-  "crypto": {
-    "ciphertext": "6ec3946b5ed85d1acd5c2b67289ea05bee0b3095cdf3661469a6d8acc6cf85f5",
-    "cipherparams": {
-      "iv": "ea54225d082c7a010467d73b3a309eda"
-    },
-    "cipher": "aes-128-ctr",
-    "kdf": "scrypt",
-    "kdfparams": {
-      "dklen": 32,
-      "salt": "dfc9c26cda4253852b93c60f7d7099a5b3f127031faf19e2dbf0593a0d3190f8",
-      "n": 262144,
-      "r": 8,
-      "p": 1
-    },
-    "mac": "ce5c87d1b0d0b2df0fbe4f389806594203fa091be4beaa6bfa6e1a10856d369e"
+  "walletID": "06667b48-6402-435a-af47-628a65882696",
+  "accesskey": "3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4",
+  "address": "0x5E73b574dA086b2aD3D6c61a78EcFD4FF916f282",
+  "keyStore": {
+    "version": 3,
+    "id": "06667b48-6402-435a-af47-628a65882696",
+    "address": "5e73b574da086b2ad3d6c61a78ecfd4ff916f282",
+    "crypto": {
+      "ciphertext": "faf240e3a03771f3a453b1beb50e9a4335cc27f2b93e5da3ae565c3d52db149e",
+      "cipherparams": {
+        "iv": "8b4d57d65c90a0c01808ec6f76367b2b"
+      },
+      "cipher": "aes-128-ctr",
+      "kdf": "scrypt",
+      "kdfparams": {
+        "dklen": 32,
+        "salt": "4f3ed347f6b43e795a68eac3a892c7d289f5fa5282087501ed8dddf882f35900",
+        "n": 262144,
+        "r": 8,
+        "p": 1
+      },
+      "mac": "04ac089467501e09c66af1394e311816efa01fa04be1e80897d650b19af45418"
+    }
   }
 }
 ```
 ### Get balance
 ```
-POST /v1/wallets/GetBalance
+blockchainConnector.getBalance(walletAdress);
 ```
 #### Description
 Get balance of specified address
 #### Parameters
 
-* <b>walletAddress</b> - wallet's address
-* <b>currencyType</b> - what type of wallet want
-* <b>network</b> - if use test environment should be passed network (rinkeby, ropsten, kovan - ETH, bitcoin-testnet -BTC)
+* <b>walletAddress</b> - wallet address
+
 #### Return format
 A string with amount of wallet
 #### Example
 <b>Request</b>
 ```
-POST /v1/wallets/GetBalance
+blockchainConnector.getBalance(walletAdress)
+	.then((data) => {
+		console.log(data);
+	})
+	.catch((error) => {
+		console.log(error);
+	});
 ```
 <b>Body</b>
 ```
@@ -108,7 +116,7 @@ POST /v1/wallets/GetBalance
 ### Send transaction
 
 ```
-POST /v1/blockchainlink/SendTransaction
+blockchainConnector.sendTransaction(transactionData)
 ```
 
 #### Description
