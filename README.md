@@ -3,196 +3,308 @@ Agnostic blockchain connector
 
 The main scope for adding the connector is to unify all the current blockchains data assets into a single normalized API interface , therefore you can build blockchain apps easily without digging into all blockchain  infrastructures 
 
+Basically the connector is only a client for the Squeezer Blockchain Gateway where actually all the magic happens. 
+
+Check the Squeezer Blockchain Gateway API Documentation:
+
+[Squeezer Blockchain Gateway - Test](https://squeezerblockchaingatewa-squeezerdeploymentbucket-1rzodet1yc0k1.s3.amazonaws.com/swagger-ui/index.html)
+
+[Squeezer Blockchain Gateway - Production (in development)]()
+
+<a name="table" />
+
+Table of contents
+=================
+
+* [Install](#install)
+* [ITN ( Instant Transaction Notification )](#itn)
+* [Initialize](#init)
+* [Wallet types](#walletTypes)
+* [Create Wallet](#createWallet)
+* [Send transaction](#sendTransaction)
+* [Transactions](#transactions)
+* [Get balance](#getBalance)
+* [Smart contract](#smartContract)
+
+<a name="install" />
+
 ### Install
 
 `npm install squeezer-blockchain-connector --save`
 
-Tasks list:
+[back to top](#table)
 
-- [x] Add base functionality
-- [ ] Integrate BTC
-- [ ] Integrate ETH
-- [ ] Integrate SQZR
-- [ ] Integrate BNB
-- [ ] Implement sandbox for testing
-- [ ] Add support to send/sign transactions
+<a name="init" />
 
 ### Initialize
 
+You will need a Squeezer access key in order to use the blockchain connector. You can get one [here](https://squeezer.io/docs/development/deployment-key/)
+
+```javascript
+const BlockchainConnector = require('squeezer-blockchain-connector');
+const blockchainConnector = new BlockchainConnector(options); 
 ```
-const blockchainConnector = require('squeezer-blockchain-connector').init({ 
-   key : 'squeezer-key', 
-   environment : 'test',
-   currencyType : 'ETH'
+- ``options`` ***required***
+- ``options.accessKey`` - ***required*** Squeezer access key 
+- ``options.environment`` - ***required*** use ``test`` for sandbox or ``live`` for production
+
+<a name="itn" />
+
+## ITN ( Instant Transaction Notification )
+----
+The ITN system will notify your server when you receive a transaction and when a transaction status changes. This is a quick and useful way to integrate blockchain transactions processing.
+
+Please check the ``Squeezer Blockchain Gateway API Documentation``->``
+Configure ITN callback url``
+
+ITN JSON object:
+
+```JSON
+{
+  "from": "0xc03f7B9bddF8aeeBCbA2f818E5f873f71b85EB5c",
+  "to": "0x903f7B9bddF8aeeBCbA2f818E5f873f71b85EB5c",
+  "amount": "0.99999999",
+  "type": "in",
+  "accessKeyHash": "accessKeyHash",
+  "hash": "0xcf387e8d1a95bd3a5b54269aa0a228...",
+  "block": "891093",
+  "status": 1,
+  "itnStatus": 1,
+  "createdAt": "2018-05-13 18:09:18",
+  "updateAt": "2018-05-13 18:09:18"
+}
+```
+
+NOTE: As a security measure please make sure that you validate `accessKeyHash` is the same at with your default `access key`
+
+Validate `accessKeyHash` example:
+
+```javascript
+if (accessKeyHash === crypto.createHmac('SHA256', accessKey).update(accessKey).digest('base64')) {
+  console.log('valid access key hash') 
+} else {
+  console.log('invalid access key hash')
+}
+```
+
+[back to top](#table)
+
+<a name="walletTypes" />
+
+## Wallet types
+
+Get current available blockchain wallet types
+
+```javascript
+blockchainConnector.walletTypes(callback)
+```
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
+
+Example request
+```javascript
+blockchainConnector.walletTypes((err, response) => {
+  console.log(response)
 });
 ```
-## Using connector
 
-### Create new Wallet
-```
-blockchainConnector.createWallet();
-```
-#### Description
-Create new wallet adress
-#### Parameters
-No parameters needed
-#### Return format
-A JSON object with accesskey, walletID, keystore and adress of wallet
-#### Example
-<b>Request</b>
-```
-blockchainConnector.createWallet()
-	.then((response) => {
-		console.log(console);
-	})
-	.catch((error) => {
-		console.log(error)
-	})
-```
-<b>Result</b>
-```
+Example response from server
+```json
 {
-  "walletID": "06667b48-6402-435a-af47-628a65882696",
-  "accesskey": "3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4",
-  "address": "0x5E73b574dA086b2aD3D6c61a78EcFD4FF916f282",
-  "keyStore": {
-    "version": 3,
-    "id": "06667b48-6402-435a-af47-628a65882696",
-    "address": "5e73b574da086b2ad3d6c61a78ecfd4ff916f282",
-    "crypto": {
-      "ciphertext": "faf240e3a03771f3a453b1beb50e9a4335cc27f2b93e5da3ae565c3d52db149e",
-      "cipherparams": {
-        "iv": "8b4d57d65c90a0c01808ec6f76367b2b"
-      },
-      "cipher": "aes-128-ctr",
-      "kdf": "scrypt",
-      "kdfparams": {
-        "dklen": 32,
-        "salt": "4f3ed347f6b43e795a68eac3a892c7d289f5fa5282087501ed8dddf882f35900",
-        "n": 262144,
-        "r": 8,
-        "p": 1
-      },
-      "mac": "04ac089467501e09c66af1394e311816efa01fa04be1e80897d650b19af45418"
+  "message":"success",
+  "data":[
+    {
+      "type":"ETH",
+      "info":"Ethereum wallet."
+    },
+    {
+      "type":"BTC",
+      "info":"Bitcoin wallet."
     }
-  }
+  ]
 }
 ```
-### Get all wallets
 
-```
-blockchainConnector.listAllWallets()
-```
+[back to top](#table)
 
-#### Description
+<a name="createWallet" />
 
-Get info about wallets
+## Create wallet
 
-#### Parameters
-No parameters needed
-#### Return format
+Create a new blockchain wallet.
 
-A JSON object that contain informations about all wallets
+```javascript
+blockchainConnector.createWallet(options, callback)
+```
+- ``options`` - ***required***.
+- ``options.type`` - ***required***. Wallet type (``ETH``).
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
 
-#### Example
-
-<b>Request</b>
-```
-blockchainConnector.listAllWallets()
-	.then((response) => {
-		console.log(console);
-	})
-	.catch((error) => {
-		console.log(error)
-	});
-```
-<b>Result</b>
-```
-[
-  {
-    "_id": "5abd3817b6542e162b4788d5",
-    "WalletID": "7931462c-7adf-4816-8259-ca99874c38fb",
-    "Address": "0xa37875c303786525a767F0d3f9F4A3E94989eC87",
-    "CurrencyType": "ETH",
-    "__v": 0
-  },
-  ...
-]
-```
-### Get balance
-```
-blockchainConnector.getBalance(walletAdress);
-```
-#### Description
-Get balance of specified address
-#### Parameters
-
-* <b>walletAddress</b> - wallet address
-
-#### Return format
-A string with amount of wallet
-#### Example
-<b>Request</b>
-```
-blockchainConnector.getBalance(walletAdress)
-	.then((data) => {
-		console.log(data);
-	})
-	.catch((error) => {
-		console.log(error);
-	});
-```
-<b>Result</b>
-```
-"1.895178899999999998"
-```
-### Send transaction
-
-```
-blockchainConnector.sendTransaction(transactionData)
+Example request
+```javascript
+blockchainConnector.createWallet({
+  type: 'ETH'
+}, (err, response) => {
+  console.log(response)
+});
 ```
 
-#### Description
-
-Send coins from one wallet to another
-
-#### Parameters of transactionData
-
-* <b>toWallet</b> - wallet's address
-* <b>amount</b> - amount of coins
-* <b>keyStore</b> - fromWallet's keystore
-* <b>accessKey</b> - api-key used to generate wallet
-
-#### Return format
-
-A JSON object that contain informations about that transaction
-
-#### Example
-
-<b>Request</b>
-```
-blockchainConnector.sendTransaction(transactionData)
-	.then((data) => {
-		console.log(data);
-	})
-	.catch((error) => {
-		console.log(error);
-	});
-```
-
-<b>Result</b>
-```
+Example response from server
+```json
 {
-  "transaction": {
-    "transaction": "0xad63f8fc7db990058ef3ec6433190cbc5b0e0af670be79c49a70d8e1daacfb29",
-    "transactionStatus": 0,
-    "_id": "5ab2b1fd6e578b3ae275e351",
-    "__v": 0
+  "walletID": "8193d025-6430-496e-abf3-88f06b51889c",
+  "address": "0xbd61ef790C3eaf4D0c4D4bE3558F8a501863525f",
+  "token": "41dbecfb0454183a4c7a9be8b874e1785b5..."
+}
+```
+
+NOTE: Squeezer will not store any sensitive data similar to `token`. For later usage please store the wallet details on a secure & safe environment.
+
+
+[back to top](#table)
+
+<a name="sendTransaction" />
+
+## Send transaction
+
+Initiate a new blockchain transaction.
+
+```javascript
+blockchainConnector.sendTransaction(options, callback)
+```
+- ``options`` - ***required***.
+- ``options.amount`` - ***required***. Amount to send, 8 decimal max. (``0.01``).
+- ``options.type`` - ***required***. Transaction type. (``ETH``).
+- ``options.to`` - ***required***. Receiver's address
+- ``options.token`` - ***required***. Wallet token
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
+
+Example request
+```javascript
+blockchainConnector.sendTransaction({
+  amount: 0.01,
+  type: 'ETH',
+  to: '0x207E1a4F3Ab910D2164bC3646CFD0aF697f86713',
+  token: "41dbecfb04541........"
+}, (err, response) => {
+  console.log(response)
+});
+```
+
+Example response from server
+```json
+{
+  "hash" : "0x4b9c1358fcbeb5434457355e3e8e44e10ebc6bec02d40c7a28046b1cfef99476"
+}
+```
+
+[back to top](#table)
+
+## Get transactions
+
+Get transactions for a specific wallet
+
+```javascript
+blockchainConnector.getTransactions(options, callback)
+```
+- ``options`` - ***required***.
+- ``options.walletId`` - ***required***. Wallet ID
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
+
+Example request
+```javascript
+blockchainConnector.getTransactions({
+  walletId: "0dbeb851-b9e7-42e4-a448-71f8520f1ea3",
+}, (err, response) => {
+  console.log(response)
+});
+```
+
+Example response from server
+```json
+{
+  "message": "success",
+  "data": [
+    {
+      "from": "0xc03f7B9bddF8aeeBCbA2f818E5f873f71b85EB5c",
+      "to": "0x903f7B9bddF8aeeBCbA2f818E5f873f71b85EB5c",
+      "amount": 0.99999999,
+      "type": "in",
+      "hash": "0xcf387e8d1a95bd3a5b54269aa0a228f159d3cd33fa9e946617c532c5cb8c77bb",
+      "block": 891093,
+      "status": 0,
+      "itnStatus": 0,
+      "createdAt": "2018-05-13 18:09:18",
+      "updateAt": "2018-05-13 18:09:18"
+    }
+  ]
+}
+```
+
+[back to top](#table)
+
+<a name="getBalance" />
+
+## Get balance
+
+Get balance for a specific wallet
+
+```javascript
+blockchainConnector.getBalance(options, callback)
+```
+- ``options`` - ***required***.
+- ``options.walletId`` - ***required***. Wallet ID
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
+
+Example request
+```javascript
+blockchainConnector.getBalance({
+  walletId: "0dbeb851-b9e7-42e4-a448-71f8520f1ea3",
+}, (err, response) => {
+  console.log(response)
+});
+```
+
+Example response from server
+```json
+{
+  "message":"success",
+  "data": {
+    "balance":0
   }
 }
 ```
 
+[back to top](#table)
 
+## Smart contract ( In development feature )
 
+Access a smart contract
 
+```javascript
+blockchainConnector.smartContract(options, callback)
+```
+- ``options`` - ***required***.
+- ``options.address`` - ***required***. Smart contract address.
+- ``options.type`` - ***required***. Smart contract type. (``ETH``)
+- ``options.abi`` - ***required***. Abi code.
+- ``options.methods`` - ***required***. Smart contract methods.
+- ``options.token`` - ***required***. Wallet token
+- ``callback`` - ***required*** callback function, accepts 2 values (``error``,``result``)
 
+Example request
+```javascript
+blockchainConnector.smartContract({
+  type: 'ETH',
+  abi : '',
+  address: '0x207E1a4F3Ab910D2164bC3646CFD0aF697f86713',
+  token: '348nagfgf45tgtg....',
+  methods: [{
+    listVotes: ['arg1', 'arg2'],
+    votesType: ['positive']
+  }]
+}, (err, response) => {
+  console.log(response)
+});
+```
+
+[back to top](#table)
