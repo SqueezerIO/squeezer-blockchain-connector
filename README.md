@@ -11,6 +11,8 @@ Check the Squeezer Blockchain Gateway API Documentation:
 
 [Squeezer Blockchain Gateway - Production (in development)]()
 
+[Watch Video tutorial](https://www.youtube.com/watch?v=vobY-Fj6z0I)
+
 <a name="table" />
 
 Table of contents
