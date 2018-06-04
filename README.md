@@ -153,7 +153,7 @@ blockchainConnector.createWallet({
 Example response from server
 ```json
 {
-  "walletID": "8193d025-6430-496e-abf3-88f06b51889c",
+  "walletId": "8193d025-6430-496e-abf3-88f06b51889c",
   "address": "0xbd61ef790C3eaf4D0c4D4bE3558F8a501863525f",
   "token": "41dbecfb0454183a4c7a9be8b874e1785b5..."
 }

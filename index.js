@@ -16,6 +16,9 @@ class BlockchainConnector {
 
     if (environment === 'test')
       this.apiGatewayBaseUrl = 'https://p251st0hh1.execute-api.us-east-1.amazonaws.com/dev';
+
+    if (environment === 'live')
+      this.apiGatewayBaseUrl = 'https://rvtt4vqrqj.execute-api.us-east-1.amazonaws.com/prod'
   }
 
   walletTypes(callback) {

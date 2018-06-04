@@ -1,6 +1,6 @@
 {
   "name": "squeezer-blockchain-connector",
-  "version": "1.0.0-alpha",
+  "version": "1.0.2-alpha",
   "description": "Squeezer agnostic blockchain connector",
   "keywords": [
     "blockchain",
