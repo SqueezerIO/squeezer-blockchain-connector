@@ -9,7 +9,7 @@ Check the Squeezer Blockchain Gateway API Documentation:
 
 [Squeezer Blockchain Gateway - Test](https://squeezerblockchaingatewa-squeezerdeploymentbucket-1rzodet1yc0k1.s3.amazonaws.com/swagger-ui/index.html)
 
-[Squeezer Blockchain Gateway - Production (in development)]()
+[Squeezer Blockchain Gateway - Production (in development)](https://squeezerblockchaingatewa-squeezerdeploymentbucket-13zh6zoa8nt41.s3.amazonaws.com/swagger-ui/index.html)
 
 [Watch Video tutorial](https://www.youtube.com/watch?v=vobY-Fj6z0I)
 
@@ -67,6 +67,7 @@ ITN JSON object:
   "to": "0x903f7B9bddF8aeeBCbA2f818E5f873f71b85EB5c",
   "amount": "0.99999999",
   "type": "in",
+  "currency": "ETH",
   "accessKeyHash": "accessKeyHash",
   "hash": "0xcf387e8d1a95bd3a5b54269aa0a228...",
   "block": "891093",
@@ -82,7 +83,7 @@ NOTE: As a security measure please make sure that you validate `accessKeyHash` i
 Validate `accessKeyHash` example:
 
 ```javascript
-if (accessKeyHash === crypto.createHmac('SHA256', accessKey).update(accessKey).digest('base64')) {
+if (accessKeyHash === crypto.createHmac('SHA256', accessKey).update(accessKey).digest('hex')) {
   console.log('valid access key hash') 
 } else {
   console.log('invalid access key hash')
@@ -117,6 +118,10 @@ Example response from server
     {
       "type":"ETH",
       "info":"Ethereum wallet."
+    },
+    {
+      "type":"BTC",
+      "info":"Bitcoin wallet."
     },
     {
       "type":"BTC",
