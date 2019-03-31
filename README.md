@@ -1,3 +1,6 @@
+
+Blockchain connector is deprecated - please use [Squeezer ChainKit](https://github.com/nickchisiu/squeezer-chainkit)
+
 ### squeezer-blockchain-connector
 Agnostic blockchain connector
 
